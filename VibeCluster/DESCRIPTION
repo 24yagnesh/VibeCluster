@@ -1,0 +1,30 @@
+Package: VibeCluster
+Type: Package
+Title: Mood-Based Music Clustering and Recommendation via K-Means and
+        PCA
+Version: 1.0.0
+Date: 2026-03-13
+Authors@R: person("Student", "Author", email = "author@example.com", role = c("aut", "cre"))
+Description: MusicMoodMapper clusters songs into mood groups using k-means
+    clustering on audio features such as energy, valence, danceability, tempo,
+    acousticness, and loudness. Principal Component Analysis (PCA) is used to
+    visualise the mood landscape in 2-D, and a k-Nearest Neighbours (kNN)
+    classifier lets users input their own feature vector to receive personalised
+    song recommendations. The package ships with a built-in dataset of 400
+    labelled tracks and supports user-supplied CSV files. Mood labels (Happy,
+    Melancholic, Energetic, Calm, Angry, Romantic) are inferred automatically
+    from cluster centroids and can be overridden. The elbow method and silhouette
+    analysis assist with choosing k.
+License: MIT + file LICENSE
+Encoding: UTF-8
+Depends: R (>= 4.0.0)
+Imports: stats, graphics, grDevices, utils
+Suggests: knitr, rmarkdown, testthat
+VignetteBuilder: knitr
+RoxygenNote: 7.3.3
+URL: https://github.com/example/VibeCluster
+BugReports: https://github.com/example/VibeCluster/issues
+NeedsCompilation: no
+Packaged: 2026-04-04 06:42:52 UTC; yagne
+Author: Student Author [aut, cre]
+Maintainer: Student Author <author@example.com>

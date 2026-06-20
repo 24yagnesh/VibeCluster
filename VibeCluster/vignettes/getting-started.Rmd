@@ -1,0 +1,161 @@
+---
+title: "Getting Started with VibeCluster"
+author: "VibeCluster Authors"
+date: "`r Sys.Date()`"
+output: rmarkdown::html_vignette
+vignette: >
+  %\VignetteIndexEntry{Getting Started with VibeCluster}
+  %\VignetteEngine{knitr::rmarkdown}
+  %\VignetteEncoding{UTF-8}
+---
+
+```{r setup, include = FALSE}
+knitr::opts_chunk$set(
+  collapse  = TRUE,
+  comment   = "#>",
+  fig.width = 7, fig.height = 5,
+  out.width = "100%"
+)
+```
+
+## What is VibeCluster?
+
+**VibeCluster** answers a simple question: *"Given the way a song sounds, what mood does it create — and what other songs will make me feel the same way?"*
+
+It uses three statistical methods from course:
+
+| Method | Role |
+|---|---|
+| **K-Means Clustering** | Groups songs into *k* mood clusters |
+| **PCA** | Projects 6-D features to 2-D for the Mood Map |
+| **kNN** | Finds the *n* songs closest to your mood profile |
+
+---
+
+## Step 1 — Load the Dataset
+
+```{r load}
+library(VibeCluster)
+
+songs <- load_songs()
+print(songs)
+```
+
+The built-in dataset has **364 songs** across 6 mood archetypes with 6 audio
+features each (energy, valence, danceability, tempo, acousticness, loudness).
+
+---
+
+## Step 2 — Choose *k* with Elbow + Silhouette
+
+```{r summary, fig.height=4.5}
+df <- mood_summary(songs, k_range = 2:8)
+df
+```
+
+Both plots suggest **k = 6** — one cluster per mood archetype. The elbow
+levels off after 6, and silhouette peaks there too.
+
+---
+
+## Step 3 — Cluster into Mood Groups
+
+```{r cluster}
+result <- mood_cluster(songs, k = 6)
+print(result)
+```
+
+Each song now has a `mood` column with its cluster label. Cluster centres
+are automatically matched to mood names by nearest-archetype distance.
+
+```{r songs_preview}
+head(result$songs[, c("title", "artist", "mood", "energy", "valence")])
+```
+
+---
+
+## Step 4 — The Mood Map (PCA)
+
+```{r moodmap, fig.height=5.5}
+plot_mood_map(result)
+```
+
+Each dot is a song; diamonds mark cluster centroids; convex hulls outline
+each mood's territory. PC1 captures roughly the *energy–acousticness* axis
+and PC2 captures *valence*.
+
+---
+
+## Step 5 — Mood Palette + Feature Profiles
+
+```{r palette, fig.height=5}
+pal <- get_mood_palette(result)
+print(pal[, c("mood", "count", "proportion")])
+```
+
+The heatmap on the right shows each cluster's mean feature profile — you
+can see Energetic songs are high energy + high tempo + high loudness, while
+Calm songs are high acousticness + low tempo.
+
+---
+
+## Step 6 — Personalised Recommendations (kNN)
+
+Define your mood profile as a 6-element feature vector, then ask for the
+closest songs:
+
+```{r recs_angry}
+# High-energy, dark mood — Angry/Energetic profile
+my_profile <- c(energy        = 0.90,
+                valence       = 0.15,
+                danceability  = 0.55,
+                tempo_norm    = 0.85,
+                acousticness  = 0.05,
+                loudness_norm = 0.92)
+
+recs <- recommend_songs(result, profile = my_profile, n = 8)
+```
+
+```{r recs_calm, fig.height=5}
+# Acoustic, gentle profile
+calm_profile <- c(energy        = 0.18,
+                  valence       = 0.65,
+                  danceability  = 0.35,
+                  tempo_norm    = 0.20,
+                  acousticness  = 0.88,
+                  loudness_norm = 0.18)
+
+recs_calm <- recommend_songs(result, profile = calm_profile, n = 8,
+                             from_mood = "Calm")
+```
+
+The Mood Map highlights your profile (★) and the recommended songs (●) so
+you can see where they sit in the mood landscape.
+
+---
+
+## Bringing Your Own Data
+
+Export tracks from the Spotify Web API (or use the `spotifyr` package),
+normalise the features, and pass the CSV to `load_songs()`:
+
+```r
+my_songs <- load_songs("my_spotify_tracks.csv")
+result   <- mood_cluster(my_songs, k = 6)
+```
+
+Your CSV only needs the six feature columns; `title` and `artist` are
+optional but will appear in recommendation output.
+
+---
+
+## Function Reference
+
+| Function | Description |
+|---|---|
+| `load_songs()` | Load built-in or custom CSV dataset |
+| `mood_cluster()` | K-means clustering into mood groups |
+| `plot_mood_map()` | PCA Mood Map scatter plot |
+| `get_mood_palette()` | Bar chart + feature heatmap |
+| `recommend_songs()` | kNN personalised recommendations |
+| `mood_summary()` | Elbow + silhouette plot for choosing k |
