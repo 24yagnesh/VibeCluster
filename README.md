@@ -8,8 +8,6 @@ VibeCluster helps users explore and organize music collections based on audio ch
 
 The package automatically groups songs into mood clusters using K-Means clustering, visualizes mood spaces through Principal Component Analysis (PCA), and generates personalized song recommendations based on user-defined listening preferences.
 
----
-
 ## Features
 
 * Mood-based song clustering using K-Means
@@ -19,8 +17,6 @@ The package automatically groups songs into mood clusters using K-Means clusteri
 * Personalized recommendation engine
 * Reproducible clustering through seed control
 * Support for custom song datasets
-
----
 
 ## Installation
 
@@ -37,8 +33,6 @@ Load the package:
 ```r
 library(VibeCluster)
 ```
-
----
 
 ## Dataset
 
@@ -58,8 +52,6 @@ songs <- load_songs()
 head(songs)
 ```
 
----
-
 ## Selecting the Optimal Number of Clusters
 
 Use the elbow method to evaluate within-cluster sum of squares (WSS):
@@ -75,7 +67,7 @@ Example:
 k_opt <- 6
 ```
 
----
+![Elbow Plot](images/elbow_plot.png)
 
 ## Mood Clustering
 
@@ -90,8 +82,6 @@ View cluster information:
 ```r
 print(result)
 ```
-
----
 
 ## Mood Distribution
 
@@ -108,7 +98,7 @@ get_mood_palette(result,
                  type = "proportion")
 ```
 
----
+![Mood Distribution](images/mood_distribution.png)
 
 ## Mood Map Visualization
 
@@ -125,9 +115,11 @@ plot_mood_map(result,
               show_hulls = FALSE)
 ```
 
----
+![Mood Map](images/mood_map.png)
 
 ## Personalized Recommendations
+
+Unlike mood-label-based recommenders, VibeCluster lets you define your own emotional fingerprint — a precise weight (0–1) across six independent audio dimensions — instead of picking from a fixed list of moods. The engine then finds songs that match your fingerprint using nearest-neighbour similarity, not rigid genre rules, so it can express in-between or unconventional moods (e.g. high energy + low valence for "aggressive," or low energy + high valence for "content") that a single mood label never could.
 
 ### High-Energy Profile
 
@@ -164,8 +156,6 @@ recommend_songs(result,
                 from_mood = "Calm")
 ```
 
----
-
 ## Reproducibility
 
 The package supports deterministic clustering through random seed control.
@@ -183,24 +173,21 @@ identical(res1$cluster_sizes,
           res2$cluster_sizes)
 ```
 
----
-
 ## Project Structure
 
-```text
+```
 VibeCluster/
 ├── R/
 ├── man/
 ├── data/
 ├── vignettes/
 ├── tests/
+├── images/
 ├── runme.R
 ├── DESCRIPTION
 ├── NAMESPACE
 └── README.md
 ```
-
----
 
 ## Methods Used
 
@@ -209,8 +196,6 @@ VibeCluster/
 * Euclidean Distance Similarity
 * k-Nearest Neighbour Recommendation Strategy
 * Elbow Method for Model Selection
-
----
 
 ## Example Workflow
 
@@ -230,12 +215,8 @@ recommend_songs(result,
                 n = 10)
 ```
 
----
-
 ## Author
 
-**Yagnesh Bonnada**
+Yagnesh Bonnada
 B.Tech Undergraduate
 Indian Institute of Technology Kanpur
-
----
